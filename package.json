@@ -1,0 +1,7 @@
+{
+  "name": "@totto2727/lens",
+  "private": true,
+  "scripts": {
+    "publish": "moon publish"
+  }
+}
