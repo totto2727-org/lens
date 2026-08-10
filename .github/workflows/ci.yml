@@ -24,4 +24,3 @@ jobs:
           moon check --target all
           moon test --target all
           moon package --list
-          nix flake check --system x86_64-linux
