@@ -34,11 +34,7 @@
         in
         {
           default = pkgs.mkShell {
-            packages = [
-              pkgs.clang
-              pkgs.moonbit-bin.moonbit.latest
-              pkgs.nodejs_24
-            ];
+            packages = [ pkgs.moonbit-bin.moonbit.latest ];
           };
         }
       );
