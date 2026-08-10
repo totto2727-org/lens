@@ -1,10 +1,10 @@
 name = "totto2727/lens"
 
-version = "0.4.0"
+version = "0.4.1"
 
 readme = "README.mbt.md"
 
-repository = "https://github.com/totto2727-org/monorepo"
+repository = "https://github.com/totto2727-org/lens"
 
 license = "MIT"
 
