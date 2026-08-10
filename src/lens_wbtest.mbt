@@ -26,6 +26,60 @@ let lens_test_user_profile_metadata : Lens[Json] = object("user")
 let lens_test_user_name : Lens[String] = object("user").string("name")
 
 ///|
+struct FromJsonRepository {
+  owner : String
+} derive(Debug, FromJson, ToJson)
+
+///|
+struct FromJsonOnlyRepository {
+  owner : String
+} derive(Debug, FromJson)
+
+///|
+enum FromJsonKind {
+  Stable
+  Preview
+} derive(Debug)
+
+///|
+impl FromJson for FromJsonKind with fn from_json(json, path) {
+  let value : String = @json.from_json(json, path~)
+  match value {
+    "stable" => Stable
+    "preview" => Preview
+    _ => raise @json.JsonDecodeError::JsonDecodeError((path, "invalid kind"))
+  }
+}
+
+///|
+impl ToJson for FromJsonKind with fn to_json(self) {
+  match self {
+    Stable => "stable".to_json()
+    Preview => "preview".to_json()
+  }
+}
+
+///|
+struct FromJsonAbsolutePath(String) derive(Debug)
+
+///|
+impl FromJson for FromJsonAbsolutePath with fn from_json(json, path) {
+  let value : String = @json.from_json(json, path~)
+  guard value.has_prefix("/") else {
+    raise @json.JsonDecodeError::JsonDecodeError(
+      (path, "expected absolute path"),
+    )
+  }
+  FromJsonAbsolutePath(value)
+}
+
+///|
+impl ToJson for FromJsonAbsolutePath with fn to_json(self) {
+  let FromJsonAbsolutePath(value) = self
+  value.to_json()
+}
+
+///|
 let lens_test_root_name : Lens[String] = root().string("name")
 
 ///|
@@ -189,6 +243,17 @@ fn root_json_path() -> @json.JsonPath raise {
 }
 
 ///|
+fn from_json_test_error_path(action : () -> Unit raise) -> @json.JsonPath raise {
+  try {
+    action()
+    fail("expected JsonDecodeError")
+  } catch {
+    @json.JsonDecodeError::JsonDecodeError((error_path, _)) => error_path
+    _ => fail("unexpected error")
+  }
+}
+
+///|
 test "Lens add_to_json_path - appends the lens pointer to the existing path" {
   let path = root_json_path().add_key("request")
   inspect(
@@ -232,6 +297,219 @@ test "Lens get_or_json_decode_error - converts a lens failure" {
     }
     _ => fail("unexpected error")
   }
+}
+
+///|
+test "ObjectLens custom - decodes object enum and validated values" {
+  let document = @json.parse(
+    "{\"repository\":{\"owner\":\"totto2727\"},\"kind\":\"stable\",\"path\":\"/tmp/cache\"}",
+  )
+  let path = root_json_path().add_key("request")
+  let repository_lens : Lens[FromJsonRepository] = root().custom("repository")
+  let repository = repository_lens.get(document)
+  let kind : FromJsonKind = root()
+    .custom("kind")
+    .get_or_json_decode_error(document, path)
+  let validated : FromJsonAbsolutePath = root()
+    .custom("path")
+    .get_or_json_decode_error(document, path)
+  debug_inspect(repository, content="{ owner: \"totto2727\" }")
+  debug_inspect(kind, content="Stable")
+  debug_inspect(validated, content="FromJsonAbsolutePath(\"/tmp/cache\")")
+}
+
+///|
+test "ObjectLens custom - encodes values through ToJson" {
+  let repository_lens : Lens[FromJsonRepository] = root().custom("repository")
+  let builder = JsonBuilder::JsonBuilder()
+  repository_lens.set_or_abort(builder, FromJsonRepository::{
+    owner: "totto2727",
+  })
+  inspect(
+    ToJson::to_json(builder).stringify(),
+    content="{\"repository\":{\"owner\":\"totto2727\"}}",
+  )
+}
+
+///|
+test "ObjectLens custom - preserves selection nested and caller paths" {
+  let path = root_json_path().add_key("request")
+  inspect(
+    from_json_test_error_path(() => {
+      let _ : FromJsonRepository = root()
+        .custom("repository")
+        .get_or_json_decode_error(@json.parse("{}"), path)
+    }),
+    content="/request/repository",
+  )
+  inspect(
+    from_json_test_error_path(() => {
+      let _ : FromJsonRepository = root()
+        .custom("repository")
+        .get_or_json_decode_error(@json.parse("{\"repository\":false}"), path)
+    }),
+    content="/request/repository",
+  )
+  inspect(
+    from_json_test_error_path(() => {
+      let _ : FromJsonRepository = root()
+        .custom("repository")
+        .get_or_json_decode_error(
+          @json.parse("{\"repository\":{\"owner\":false}}"),
+          path,
+        )
+    }),
+    content="/request/repository/owner",
+  )
+  inspect(
+    from_json_test_error_path(() => {
+      let _ : FromJsonKind = root()
+        .custom("kind")
+        .get_or_json_decode_error(@json.parse("{\"kind\":\"unknown\"}"), path)
+    }),
+    content="/request/kind",
+  )
+  inspect(
+    from_json_test_error_path(() => {
+      let _ : FromJsonAbsolutePath = root()
+        .custom("path")
+        .get_or_json_decode_error(@json.parse("{\"path\":\"relative\"}"), path)
+    }),
+    content="/request/path",
+  )
+}
+
+///|
+test "ObjectLens custom array - preserves item decode paths" {
+  let repositories : Lens[Array[FromJsonRepository]] = root()
+    .custom("repositories")
+    .array()
+  let path = root_json_path().add_key("request")
+  inspect(
+    from_json_test_error_path(() => {
+      repositories.get_or_json_decode_error(
+        @json.parse(
+          "{\"repositories\":[{\"owner\":\"totto2727\"},{\"owner\":false}]}",
+        ),
+        path,
+      )
+      |> ignore
+    }),
+    content="/request/repositories/1/owner",
+  )
+}
+
+///|
+test "ObjectLens custom presence - preserves nested decode paths" {
+  let repository : PresenceLens[FromJsonRepository] = root()
+    .custom("repository")
+    .optional()
+  let path = root_json_path().add_key("request")
+  inspect(
+    from_json_test_error_path(() => {
+      repository.get_or_json_decode_error(
+        @json.parse("{\"repository\":{\"owner\":false}}"),
+        path,
+      )
+      |> ignore
+    }),
+    content="/request/repository/owner",
+  )
+}
+
+///|
+test "ObjectLens custom presence - preserves missing and null policies" {
+  let optional : PresenceLens[FromJsonRepository] = root()
+    .custom("repository")
+    .optional()
+  let nullable : PresenceLens[FromJsonRepository] = root()
+    .custom("repository")
+    .nullable()
+  let nullish : PresenceLens[FromJsonRepository] = root()
+    .custom("repository")
+    .nullish()
+  let path = root_json_path().add_key("request")
+  debug_inspect(
+    optional.get_or_json_decode_error(@json.parse("{}"), path),
+    content="None",
+  )
+  inspect(
+    from_json_test_error_path(() => {
+      optional.get_or_json_decode_error(
+        @json.parse("{\"repository\":null}"),
+        path,
+      )
+      |> ignore
+    }),
+    content="/request/repository",
+  )
+  inspect(
+    from_json_test_error_path(() => {
+      nullable.get_or_json_decode_error(@json.parse("{}"), path) |> ignore
+    }),
+    content="/request/repository",
+  )
+  debug_inspect(
+    nullable.get_or_json_decode_error(
+      @json.parse("{\"repository\":null}"),
+      path,
+    ),
+    content="None",
+  )
+  debug_inspect(
+    nullish.get_or_json_decode_error(@json.parse("{}"), path),
+    content="None",
+  )
+  debug_inspect(
+    nullish.get_or_json_decode_error(@json.parse("{\"repository\":null}"), path),
+    content="None",
+  )
+}
+
+///|
+test "ObjectLens custom get - reports external decode at the selected pointer" {
+  let repository : Lens[FromJsonRepository] = root().custom("repository")
+  let issue = get_issue(
+    repository,
+    @json.parse("{\"repository\":{\"owner\":false}}"),
+  )
+  inspect(issue.pointer.to_string(), content="/repository")
+  debug_inspect(issue.code, content="ExternalDecode")
+}
+
+///|
+test "ObjectLens custom array get - reports external decode at the item pointer" {
+  let repositories : Lens[Array[FromJsonRepository]] = root()
+    .custom("repositories")
+    .array()
+  let issue = get_issue(
+    repositories,
+    @json.parse(
+      "{\"repositories\":[{\"owner\":\"totto2727\"},{\"owner\":false}]}",
+    ),
+  )
+  inspect(issue.pointer.to_string(), content="/repositories/1")
+  debug_inspect(issue.code, content="ExternalDecode")
+}
+
+///|
+test "Lens decode_from_json - preserves the FromJson-only read bridge" {
+  let repository_lens : Lens[Json] = root().json("repository")
+  let path = root_json_path().add_key("request")
+  let repository : FromJsonOnlyRepository = repository_lens.decode_from_json(
+    @json.parse("{\"repository\":{\"owner\":\"totto2727\"}}"),
+    path,
+  )
+  debug_inspect(repository, content="{ owner: \"totto2727\" }")
+  inspect(
+    from_json_test_error_path(() => {
+      let _ : FromJsonOnlyRepository = repository_lens.decode_from_json(
+        @json.parse("{\"repository\":{\"owner\":false}}"),
+        path,
+      )
+    }),
+    content="/request/repository/owner",
+  )
 }
 
 ///|

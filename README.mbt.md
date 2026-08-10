@@ -38,6 +38,24 @@ test {
 }
 ```
 
+A custom lens can read and write any type implementing the standard `FromJson` and `ToJson` traits. `get_or_json_decode_error` preserves the selected path in nested decode errors, and `set` delegates serialization to `ToJson`.
+
+```mbt check
+struct Repository {
+  owner : String
+} derive(FromJson, ToJson)
+
+fn decode_repository(
+  document : Json,
+  path : @json.JsonPath,
+) -> Repository raise @json.JsonDecodeError {
+  let repository : Lens[Repository] = root().custom("repository")
+  repository.get_or_json_decode_error(document, path)
+}
+```
+
+Use `ObjectLens::json` when the selected value must remain raw `Json`. Use `ObjectLens::custom` when the application type owns both its standard JSON decoding and encoding contract. `Lens[Json]::decode_from_json` remains available for read-only types that implement `FromJson` but not `ToJson`.
+
 ## Typed construction
 
 `JsonBuilder` constructs an output object without requiring an existing `Json` document. `Lens::set` encodes its typed value, creates missing object parents, and writes it at the lens pointer. Repeated writes to the same pointer use the latest value.

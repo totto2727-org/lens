@@ -185,17 +185,17 @@ The string form follows RFC 6901:
 
 ```moonbit
 pub struct Decoder[T] {
-  priv decode_ : (Json) -> T raise DecodeProblem
+  priv decode_ : (Json, JsonPath?) -> T raise DecodeProblem
 }
 ```
 
-`DecodeProblem` is a package-private suberror containing path-independent failure information. `Lens::get` catches it, attaches the selected pointer to produce a public `Issue`, and raises `LensError(issue)`.
+Every decoder receives a required optional path. `Lens::get` passes `None`; JSON decoding entry points pass `Some(selected_path)`. `DecodeProblem` is a package-private suberror that preserves either a structured lens failure or a standard `JsonDecodeError`. `Lens::get` converts it into a public `Issue`, while `get_or_json_decode_error` returns the preserved standard error or translates the structured failure at the selected path.
 
-Primitive decoders should perform JSON variant dispatch directly so the package can provide stable structured error codes. Numeric parsing and conversion inside those decoders must delegate to MoonBit core. A later `Decoder::from_json[T : FromJson]` bridge may catch `JsonDecodeError`, but it should classify the failure as an external decode failure because core's human-readable message is not a stable structured error code.
+Primitive decoders perform JSON variant dispatch directly so the package can provide stable structured error codes. Numeric parsing and conversion inside those decoders delegate to MoonBit core. `ObjectLens::custom[T : FromJson + ToJson]` delegates to standard `FromJson`, forwarding the optional selected `JsonPath` through the same decoder callback. Its ordinary `Lens::get` path reports a standard decoder failure as `ExternalDecode` at the selected lens pointer because `JsonPath` is opaque, while `get_or_json_decode_error` preserves the exact nested standard path. Array and presence combinators forward the optional path through that single callback. `ObjectLens::json` remains the raw `Json` accessor, and `Lens[Json]::decode_from_json` remains a read-only bridge for types without `ToJson`.
 
 ### Encoder
 
-`Encoder[T]` converts a typed value into one concrete JSON value. Primitive encoders delegate to MoonBit core JSON constructors. Property omission belongs to `PresenceLens::set` rather than `Encoder`. JSON arrays cannot contain a missing element without shifting later indices, so `PresenceLens::array` normalizes every presence mode to nullable item semantics for both encoding and decoding.
+`Encoder[T]` converts a typed value into one concrete JSON value. Primitive encoders delegate to MoonBit core JSON constructors, while a custom lens delegates to standard `ToJson`. Property omission belongs to `PresenceLens::set` rather than `Encoder`. JSON arrays cannot contain a missing element without shifting later indices, so `PresenceLens::array` normalizes every presence mode to nullable item semantics for both encoding and decoding.
 
 Presence combinators have explicit builder behavior:
 
@@ -293,6 +293,11 @@ pub fn ObjectLens::json(
   Self,
   String,
 ) -> Lens[Json]
+
+pub fn ObjectLens::custom[T : FromJson + ToJson](
+  Self,
+  String,
+) -> Lens[T]
 
 pub fn ObjectLens::get(
   Self,
@@ -680,7 +685,7 @@ The following choices do not block milestone 1 and should be resolved with imple
 - Whether `Issue`, `IssueCode`, `JsonKind`, and the payload of `LensError` should be fully public or read-only.
 - Whether `Pointer` should expose its segments or only iteration and string conversion.
 - Whether array item validation accumulates failures by default or exposes both accumulating and fail-fast modes.
-- Whether a `FromJson` bridge is useful enough despite its less structured error classification.
+- Whether additional read-only bridges are useful without expanding `Lens[T]`'s encoder contract.
 - Whether future writes use persistent or in-place updates.
 - Whether a missing intermediate object is an error or may be created by an explicit write policy.
 - How optional and nullable lenses behave when a write targets a missing or `null` value.
