@@ -3,3 +3,5 @@ _build/
 *.generated.mbti
 result
 result-*
+.direnv/
+.omo/
