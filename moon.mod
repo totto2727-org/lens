@@ -1,6 +1,6 @@
 name = "totto2727/lens"
 
-version = "0.4.1"
+version = "0.4.2"
 
 readme = "README.mbt.md"
 
