@@ -1,5 +1,7 @@
 _build/
 .moon/
+.direnv/
+.omo/
 *.generated.mbti
 result
 result-*
