@@ -122,9 +122,8 @@ impl ToJson for BuildNode with fn to_json(self) -> Json {
 /// Writes a typed value at this lens's output pointer.
 ///
 /// Repeated writes to the same pointer use the latest value. Missing object
-/// parents are created. An omitted optional value removes a previous value and
-/// prunes empty generated parents. The builder is unchanged when a path
-/// conflict raises `JsonBuildError`.
+/// parents are created. The builder is unchanged when a path conflict raises
+/// `JsonBuildError`.
 pub fn[T] Lens::set(
   self : Lens[T],
   builder : JsonBuilder,

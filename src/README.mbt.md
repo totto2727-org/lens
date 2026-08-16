@@ -9,10 +9,9 @@ This document is canonical `README.mbt.md`; maintain the root `README.mbt.md` as
 Create typed child lenses once and reuse them across documents. A lens read reports a structured `LensError` with its JSON Pointer when traversal or decoding fails.
 
 ```mbt check
+///|
 test {
-  let document = @json.parse(
-    "{\"user\":{\"name\":\"Ada\",\"age\":37}}",
-  )
+  let document = @json.parse("{\"user\":{\"name\":\"Ada\",\"age\":37}}")
   let user = object("user")
   let name_lens = user.string("name")
   let age_lens = user.int("age")
@@ -25,15 +24,14 @@ test {
 Build a new JSON object through the same typed lenses.
 
 ```mbt check
+///|
 test {
   let builder = JsonBuilder::JsonBuilder()
   let user = object("user")
   user.string("name").set(builder, "Ada")
   user.int("age").set(builder, 37)
 
-  @json.json_inspect(builder, content={
-    "user": {"name": "Ada", "age": 37},
-  })
+  @json.json_inspect(builder, content={ "user": { "name": "Ada", "age": 37 } })
 }
 ```
 
