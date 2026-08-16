@@ -1,8 +1,8 @@
-# lens
+# lens package
 
-Typed JSON lenses, builders, and aggregate validation for MoonBit applications that need reusable, checked access to JSON documents.
+Detailed usage for the `totto2727/lens` package: typed JSON lenses, builders, and aggregate validation for reusable, checked access to JSON documents.
 
-This document is canonical `README.mbt.md`; maintain the root `README.mbt.md` as the relative symlink `README.mbt.md -> src/README.mbt.md` and `README.md` as the relative symlink `README.md -> README.mbt.md`.
+This document is the canonical literate package README. Maintain its sibling `README.md` as the relative symlink `README.md -> README.mbt.md`; the repository module overview is [../README.mbt.md](../README.mbt.md).
 
 ## Usage
 

@@ -3,11 +3,12 @@
 ## Repository structure
 
 ```text
-moon.mod       Mooncakes module metadata and published package identity
-src/           Lens implementation, JSON boundary adapters, and MoonBit tests
-src/README.mbt.md  Canonical literate end-user documentation in the MoonBit package
-README.mbt.md      Relative symlink to src/README.mbt.md
-README.md          Relative symlink to README.mbt.md
+moon.mod            Mooncakes module metadata and published package identity
+src/                Lens implementation, JSON boundary adapters, MoonBit tests, and detailed package README
+src/README.mbt.md   Canonical detailed literate README for the lens package
+src/README.md       Relative symlink to src/README.mbt.md
+README.mbt.md       Canonical literate module overview
+README.md           Relative symlink to README.mbt.md
 docs/          Design notes and roadmap
 .github/       MoonBit CI and publishing workflows
 flake.nix      Reproducible MoonBit development shell
@@ -19,14 +20,14 @@ flake.nix      Reproducible MoonBit development shell
 
 - Run commands from the repository root.
 - Use the MoonBit toolchain provided by `flake.nix` or an equivalent installed `moon` binary.
-- Keep `src/README.mbt.md` canonical and preserve the relative `README.mbt.md -> src/README.mbt.md` and `README.md -> README.mbt.md` symlinks.
+- Keep the root `README.mbt.md` as the module overview and `src/README.mbt.md` as the detailed package README; preserve their sibling `README.md -> README.mbt.md` symlinks.
 - Keep public API behavior and semantics in `///` source documentation; use `moon check` examples in README.mbt.md for executable usage coverage.
 
 ### Standard tasks
 
 - `moon check` — Check the complete MoonBit module.
-- `moon check README.mbt.md` — Check the literal literate README from the repository root.
-- `moon test README.mbt.md` — Run the literal literate README tests from the repository root.
+- `moon check src/README.mbt.md` — Check the literal detailed package README.
+- `moon test src/README.mbt.md` — Run the literal detailed package README tests.
 - `moon test --target native` — Run native tests.
 - `moon test --target wasm-gc` — Run WebAssembly garbage-collection target tests.
 - `moon build --target native` — Build the native package.
