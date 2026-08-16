@@ -31,6 +31,14 @@ pub struct JsonBuilder {
 
 ///|
 /// Creates an empty JSON object builder.
+///
+/// ```mbt check
+/// test {
+///   let builder = JsonBuilder::JsonBuilder()
+///   object("user").string("name").set(builder, "Ada")
+///   @json.json_inspect(builder, content={ "user": { "name": "Ada" } })
+/// }
+/// ```
 pub fn JsonBuilder::JsonBuilder() -> JsonBuilder {
   JsonBuilder::{ properties: Map([]) }
 }
@@ -113,7 +121,10 @@ impl ToJson for BuildNode with fn to_json(self) -> Json {
 ///|
 /// Writes a typed value at this lens's output pointer.
 ///
-/// Repeated writes to the same pointer use the latest value. Missing object parents are created. An omitted optional value removes a previous value and prunes empty generated parents.
+/// Repeated writes to the same pointer use the latest value. Missing object
+/// parents are created. An omitted optional value removes a previous value and
+/// prunes empty generated parents. The builder is unchanged when a path
+/// conflict raises `JsonBuildError`.
 pub fn[T] Lens::set(
   self : Lens[T],
   builder : JsonBuilder,
@@ -129,6 +140,9 @@ pub fn[T] Lens::set(
 
 ///|
 /// Writes an optional typed value using this lens's current presence policy.
+///
+/// `nullable(None)` and `nullish(encode_mode=Null)` write JSON `null`, while
+/// `optional(None)` and `nullish(encode_mode=Omit)` remove the selected value.
 pub fn[T] PresenceLens::set(
   self : PresenceLens[T],
   builder : JsonBuilder,
