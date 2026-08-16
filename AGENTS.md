@@ -6,7 +6,6 @@
 moon.mod            Mooncakes module metadata and published package identity
 src/                Lens implementation, JSON boundary adapters, MoonBit tests, and detailed package README
 src/README.mbt.md   Canonical detailed literate README for the lens package
-src/README.md       Relative symlink to src/README.mbt.md
 README.mbt.md       Canonical literate module overview
 README.md           Relative symlink to README.mbt.md
 docs/          Design notes and roadmap
@@ -20,7 +19,7 @@ flake.nix      Reproducible MoonBit development shell
 
 - Run commands from the repository root.
 - Use the MoonBit toolchain provided by `flake.nix` or an equivalent installed `moon` binary.
-- Keep the root `README.mbt.md` as the module overview and `src/README.mbt.md` as the detailed package README; preserve their sibling `README.md -> README.mbt.md` symlinks.
+- Keep the root `README.mbt.md` as the module overview and `src/README.mbt.md` as the detailed package README; preserve `README.md -> README.mbt.md`.
 - Keep public API behavior and semantics in `///` source documentation; use `moon check` examples in README.mbt.md for executable usage coverage.
 
 ### Standard tasks
