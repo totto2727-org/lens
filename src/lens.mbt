@@ -1,11 +1,18 @@
 ///|
 /// A location in a JSON document from which typed child lenses can be created.
+///
+/// Reading an object returns a copied top-level map, so mutations to that map
+/// do not change the source document. Nested `Json` values retain normal JSON
+/// sharing semantics.
 pub struct ObjectLens {
   priv lens : Lens[Map[String, Json]]
 }
 
 ///|
 /// A reusable typed accessor for one location in a JSON document.
+///
+/// A lens can be reused across documents. Its selected pointer is retained in
+/// diagnostics, including nested array indices and RFC 6901 key escaping.
 pub struct Lens[T] {
   priv pointer : Pointer
   priv decoder : Decoder[T]
@@ -14,6 +21,9 @@ pub struct Lens[T] {
 
 ///|
 /// A typed accessor whose missing and `null` behavior can be replaced without nesting options.
+///
+/// Every presence combinator returns this same `T?` shape. The last combinator
+/// call controls both decoding and encoding behavior.
 pub struct PresenceLens[T] {
   priv lens : Lens[T]
   priv mode : PresenceMode
@@ -35,6 +45,13 @@ pub(all) enum NullishEncodeMode {
 
 ///|
 /// Returns an object lens positioned at the document root.
+///
+/// ```mbt check
+/// test {
+///   let document = @json.parse("{\"user\":{\"name\":\"Ada\"}}")
+///   inspect(object("user").string("name").get(document), content="Ada")
+/// }
+/// ```
 pub fn root() -> ObjectLens {
   ObjectLens::{
     lens: Lens::{
@@ -84,7 +101,10 @@ pub fn ObjectLens::bool(self : ObjectLens, key : String) -> Lens[Bool] {
 }
 
 ///|
-/// Returns a finite-number lens positioned at a child property.
+/// Returns a number lens positioned at a child property.
+///
+/// The retained JSON `Double` is returned without an additional finiteness
+/// check, including non-finite values.
 pub fn ObjectLens::number(self : ObjectLens, key : String) -> Lens[Double] {
   Lens::{
     pointer: self.lens.pointer.key(key),
@@ -95,6 +115,9 @@ pub fn ObjectLens::number(self : ObjectLens, key : String) -> Lens[Double] {
 
 ///|
 /// Returns an integer lens that delegates conversion to `Double::to_int`.
+///
+/// Fractional, saturating, and special-value behavior therefore follows the
+/// standard MoonBit `Double::to_int` conversion.
 pub fn ObjectLens::int(self : ObjectLens, key : String) -> Lens[Int] {
   Lens::{
     pointer: self.lens.pointer.key(key),
@@ -105,6 +128,9 @@ pub fn ObjectLens::int(self : ObjectLens, key : String) -> Lens[Int] {
 
 ///|
 /// Returns a raw JSON lens positioned at a child property.
+///
+/// Use this when the selected value intentionally remains opaque `Json`.
+/// For application types with standard JSON traits, prefer `custom`.
 pub fn ObjectLens::json(self : ObjectLens, key : String) -> Lens[Json] {
   Lens::{
     pointer: self.lens.pointer.key(key),
@@ -115,6 +141,9 @@ pub fn ObjectLens::json(self : ObjectLens, key : String) -> Lens[Json] {
 
 ///|
 /// Returns a typed lens that delegates decoding and encoding to standard JSON traits.
+///
+/// `FromJson` decode failures retain the selected JSON path, and `ToJson`
+/// supplies the corresponding builder encoding.
 pub fn[T : @json.FromJson + ToJson] ObjectLens::custom(
   self : ObjectLens,
   key : String,
@@ -128,6 +157,8 @@ pub fn[T : @json.FromJson + ToJson] ObjectLens::custom(
 
 ///|
 /// Returns a lens that decodes every array item with this lens's decoder.
+///
+/// Item failures include the zero-based item index in their diagnostic pointer.
 pub fn[T] Lens::array(self : Lens[T]) -> Lens[Array[T]] {
   Lens::{
     pointer: self.pointer,
@@ -182,6 +213,9 @@ pub fn[T] PresenceLens::nullish(
 
 ///|
 /// Returns a lens that treats every array item as nullable.
+///
+/// This normalizes `None` to JSON `null` so array indices remain stable. It is
+/// different from applying `optional` to the whole array property.
 pub fn[T] PresenceLens::array(self : PresenceLens[T]) -> Lens[Array[T?]] {
   Lens::{
     pointer: self.lens.pointer,

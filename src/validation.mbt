@@ -11,7 +11,20 @@ pub enum Validation {
 ///|
 /// Runs every lens check and returns all issues in input order.
 ///
-/// This function never constructs or returns application values.
+/// This function never constructs or returns application values. An empty
+/// input is `Valid`; otherwise every failed read is retained in the returned
+/// `Invalid` value.
+///
+/// ```mbt check
+/// test {
+///   let document = @json.parse("{\"user\":{\"name\":\"Ada\"}}")
+///   let name_lens = object("user").string("name")
+///   match validate(document, [name_lens]) {
+///     Valid => ()
+///     Invalid(_) => fail("expected valid document")
+///   }
+/// }
+/// ```
 pub fn validate(document : Json, lenses : Array[&LensTrait]) -> Validation {
   let issues : Array[Issue] = []
   for lens in lenses {
