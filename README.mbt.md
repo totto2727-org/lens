@@ -2,8 +2,6 @@
 
 `totto2727/lens` is a MoonBit module for typed JSON lenses, builders, and aggregate validation. The module publishes one `lens` package; see the [detailed package README](./src/README.mbt.md) for checked examples and package-level usage.
 
-This document is canonical `README.mbt.md`; maintain `README.md` as the relative symlink `README.md -> README.mbt.md`.
-
 ## Usage
 
 Read a typed property from a JSON document after completing [Setup](#setup).
