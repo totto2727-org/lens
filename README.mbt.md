@@ -14,7 +14,7 @@ test "read a typed JSON property" {
 }
 ```
 
-For builders, presence semantics, and validation, see the [detailed package README](./src/README.mbt.md#usage).
+For typed construction and detailed package behavior, see the [package guide](./src/README.mbt.md).
 
 ## Key features
 
