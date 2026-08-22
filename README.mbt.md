@@ -9,7 +9,7 @@ This document is canonical `README.mbt.md`; maintain `README.md` as the relative
 Add the module, then follow the [package usage examples](./src/README.mbt.md#usage).
 
 ```bash
-moon add totto2727/lens@0.4.2
+moon add totto2727/lens@0.4.3
 ```
 
 ## Key features
@@ -27,7 +27,7 @@ moon add totto2727/lens@0.4.2
 1. Add `totto2727/lens` to a MoonBit project.
 
 ```bash
-moon add totto2727/lens@0.4.2
+moon add totto2727/lens@0.4.3
 ```
 
 2. Read the [detailed package README](./src/README.mbt.md) for executable usage examples.

@@ -52,7 +52,7 @@ test {
 1. Add the published module to a MoonBit project.
 
 ```bash
-moon add totto2727/lens@0.4.2
+moon add totto2727/lens@0.4.3
 ```
 
 2. Import the package as `@lens` and compose lenses from `@lens.root()` or `@lens.object("property")`.

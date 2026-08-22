@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1";
     moonbit-overlay = {
-      url = "github:totto2727/moonbit-overlay";
+      url = "github:totto2727-org/moonbit-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -35,6 +35,12 @@
         {
           default = pkgs.mkShell {
             packages = [ pkgs.moonbit-bin.moonbit.latest ];
+
+            shellHook = ''
+              ${pkgs.lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
+                export NIX_LDFLAGS="$NIX_LDFLAGS -no_compact_unwind"
+              ''}
+            '';
           };
         }
       );
