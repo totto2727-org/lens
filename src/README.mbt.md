@@ -25,3 +25,9 @@ test {
 - `JsonBuilder` construction with typed path-conflict errors and deterministic replacement/removal behavior.
 - Aggregate `validate` checks that preserve every failure in input order without constructing application values.
 - RFC 6901 pointers and standard `JsonDecodeError` path propagation for nested custom decoders.
+
+## API
+
+The package-owned API index and generated signatures are available in the [Mooncakes API reference](https://mooncakes.io/docs/totto2727/lens).
+
+_This README was generated from the [share-artifact skill](https://raw.githubusercontent.com/totto2727-org/agent/refs/heads/main/plugins/totto2727-coding/skills/share-artifact/SKILL.md) and [README template](https://raw.githubusercontent.com/totto2727-org/agent/refs/heads/main/plugins/totto2727-coding/skills/share-artifact/readme/template.md)._
