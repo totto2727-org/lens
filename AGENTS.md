@@ -20,7 +20,7 @@ flake.nix      Reproducible MoonBit development shell
 - Use the MoonBit toolchain provided by `flake.nix` or an equivalent installed `moon` binary.
 - Keep `README.mbt.md` as the single consumer entrypoint and preserve `README.md -> README.mbt.md`.
 - Keep public API behavior and semantics in `///` source documentation; use `moon check` examples in README.mbt.md for executable usage coverage.
-- Keep the root README front matter aligned with its standalone document-test package imports.
+- Keep the root README front matter aligned with its standalone document-test package imports, using the latest published module version rather than an unreleased registry version.
 
 ### Standard tasks
 

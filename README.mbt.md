@@ -55,7 +55,7 @@ test "build typed JSON properties" {
 1. Add `totto2727/lens` to a MoonBit project.
 
 ```bash
-moon add totto2727/lens@0.4.2
+moon add totto2727/lens@0.4.3
 ```
 
 2. Import the lens package and the standard JSON parser in the consumer package's `moon.pkg`.
