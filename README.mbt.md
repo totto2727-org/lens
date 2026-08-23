@@ -1,12 +1,3 @@
----
-moonbit:
-  import:
-    - path: totto2727/lens@0.4.2
-      alias: lens
-    - path: moonbitlang/core/json
-      alias: json
----
-
 # lens
 
 `totto2727/lens` is a MoonBit module for typed JSON traversal, construction, and aggregate validation through one `lens` package.
@@ -15,7 +6,7 @@ moonbit:
 
 Read a typed property from a JSON document after completing [Setup](#setup).
 
-```mbt check
+```moonbit
 ///|
 test "read a typed JSON property" {
   let document = @json.parse("{\"user\":{\"name\":\"Ada\"}}")
@@ -26,7 +17,7 @@ test "read a typed JSON property" {
 
 Build a new JSON object through the same typed lenses. `JsonBuilder` reports path conflicts without mutating a failed build.
 
-```mbt check
+```moonbit
 ///|
 test "build typed JSON properties" {
   let builder = @lens.JsonBuilder::JsonBuilder()
