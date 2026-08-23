@@ -4,8 +4,7 @@
 
 ```text
 moon.mod            Mooncakes module metadata and published package identity
-src/                Lens implementation, JSON boundary adapters, MoonBit tests, and detailed package README
-src/README.mbt.md   Canonical detailed literate README for the lens package
+src/                Lens implementation, JSON boundary adapters, and MoonBit tests
 README.mbt.md       Canonical literate module overview
 README.md           Relative symlink to README.mbt.md
 docs/          Design notes and roadmap
@@ -19,14 +18,15 @@ flake.nix      Reproducible MoonBit development shell
 
 - Run commands from the repository root.
 - Use the MoonBit toolchain provided by `flake.nix` or an equivalent installed `moon` binary.
-- Keep the root `README.mbt.md` as the module overview and `src/README.mbt.md` as the detailed package README; preserve `README.md -> README.mbt.md`.
+- Keep `README.mbt.md` as the single consumer entrypoint and preserve `README.md -> README.mbt.md`.
 - Keep public API behavior and semantics in `///` source documentation; use `moon check` examples in README.mbt.md for executable usage coverage.
+- Keep the root README front matter aligned with its standalone document-test package imports.
 
 ### Standard tasks
 
 - `moon check` — Check the complete MoonBit module.
-- `moon check src/README.mbt.md` — Check the literal detailed package README.
-- `moon test src/README.mbt.md` — Run the literal detailed package README tests.
+- `moon -C "${TMPDIR:-/tmp}" check "$PWD/README.mbt.md"` — Check the root README as a standalone literate file.
+- `moon -C "${TMPDIR:-/tmp}" test "$PWD/README.mbt.md"` — Run the root README's standalone document tests.
 - `moon test --target native` — Run native tests.
 - `moon test --target wasm-gc` — Run WebAssembly garbage-collection target tests.
 - `moon build --target native` — Build the native package.

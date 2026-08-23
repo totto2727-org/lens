@@ -1,12 +1,22 @@
+---
+moonbit:
+  import:
+    - path: totto2727/lens@0.4.2
+      alias: lens
+    - path: moonbitlang/core/json
+      alias: json
+---
+
 # lens
 
-`totto2727/lens` is a MoonBit module for typed JSON lenses, builders, and aggregate validation. The module publishes one `lens` package; see the [detailed package README](./src/README.mbt.md) for checked examples and package-level usage.
+`totto2727/lens` is a MoonBit module for typed JSON traversal, construction, and aggregate validation through one `lens` package.
 
 ## Usage
 
 Read a typed property from a JSON document after completing [Setup](#setup).
 
-```moonbit
+```mbt check
+///|
 test "read a typed JSON property" {
   let document = @json.parse("{\"user\":{\"name\":\"Ada\"}}")
   let name = @lens.object("user").string("name").get(document)
@@ -14,13 +24,27 @@ test "read a typed JSON property" {
 }
 ```
 
-For typed construction and detailed package behavior, see the [package guide](./src/README.mbt.md).
+Build a new JSON object through the same typed lenses. `JsonBuilder` reports path conflicts without mutating a failed build.
+
+```mbt check
+///|
+test "build typed JSON properties" {
+  let builder = @lens.JsonBuilder::JsonBuilder()
+  let user = @lens.object("user")
+  user.string("name").set(builder, "Ada")
+  user.int("age").set(builder, 37)
+
+  @json.json_inspect(builder, content={ "user": { "name": "Ada", "age": 37 } })
+}
+```
 
 ## Key features
 
-- One publishable `lens` package for typed JSON traversal and construction.
-- Checked package examples for typed reads and JSON object building.
-- Generated public API documentation on Mooncakes.
+- Typed accessors for strings, booleans, numbers, integers, objects, arrays, custom `FromJson`/`ToJson` values, and raw `Json`.
+- Presence-aware reads and writes with distinct `nullable`, `optional`, and `nullish` semantics.
+- `JsonBuilder` construction with typed path-conflict errors and deterministic replacement/removal behavior.
+- Aggregate `validate` checks that preserve every failure in input order without constructing application values.
+- RFC 6901 pointers and standard `JsonDecodeError` path propagation for nested custom decoders.
 
 ## Prerequisites
 
