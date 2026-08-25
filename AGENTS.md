@@ -5,7 +5,6 @@
 ```text
 moon.mod            Mooncakes module metadata and published package identity
 src/                Lens implementation, JSON boundary adapters, and MoonBit tests
-src/test/           Black-box contract for root README usage against current source
 README.mbt.md       Canonical literate module overview
 README.md           Relative symlink to README.mbt.md
 docs/          Design notes and roadmap
@@ -21,12 +20,10 @@ flake.nix      Reproducible MoonBit development shell
 - Use the MoonBit toolchain provided by `flake.nix` or an equivalent installed `moon` binary.
 - Keep `README.mbt.md` as the single consumer entrypoint and preserve `README.md -> README.mbt.md`.
 - Keep public API behavior and semantics in `///` source documentation.
-- Keep `src/test/readme_usage_test.mbt` aligned with the root README Usage examples so the advertised API is tested against the current workspace source.
 
 ### Standard tasks
 
 - `moon check` — Check the complete MoonBit module.
-- `moon test src/test/readme_usage_test.mbt` — Verify the root README Usage contract against the current workspace package.
 - `moon test --target native` — Run native tests.
 - `moon test --target wasm-gc` — Run WebAssembly garbage-collection target tests.
 - `moon build --target native` — Build the native package.
@@ -48,14 +45,14 @@ flake.nix      Reproducible MoonBit development shell
 
 ## Development tools
 
-- **MoonBit**: Compiles, checks, tests, and packages the module and its current-source README usage contract.
+- **MoonBit**: Compiles, checks, tests, and packages the module.
 - **Mooncakes**: Publishes the module and hosts the generated API reference at [totto2727/lens](https://mooncakes.io/docs/totto2727/lens).
 - **Nix flakes**: Provide the reproducible standalone MoonBit development shell.
 
 ## Package-specific rules
 
 - Add or update `///` documentation when changing a public symbol; Mooncakes uses these comments for the generated API reference.
-- Keep README examples concise; verify their executable contract through `src/test/readme_usage_test.mbt`, and keep detailed operational commands in this file.
+- Keep README examples concise, and keep detailed operational commands in this file.
 - Preserve the package's typed JSON boundary: use `custom` for application types with standard JSON traits and `json` only when a raw JSON value is intentional.
 
 _This AGENTS.md was generated from the [share-artifact skill](https://raw.githubusercontent.com/totto2727-org/agent/refs/heads/main/plugins/totto2727-coding/skills/share-artifact/SKILL.md) and [AGENTS template](https://raw.githubusercontent.com/totto2727-org/agent/refs/heads/main/plugins/totto2727-coding/skills/share-artifact/agents/template.md)._

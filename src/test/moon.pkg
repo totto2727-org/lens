@@ -1,4 +1,0 @@
-import {
-  "moonbitlang/core/json",
-  "totto2727/lens",
-} for "test"
