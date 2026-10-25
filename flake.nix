@@ -21,10 +21,12 @@
         "x86_64-linux"
       ];
       forEachSystem = nixpkgs.lib.genAttrs supportedSystems;
-      mkPkgs = system: import nixpkgs {
-        inherit system;
-        overlays = [ moonbit-overlay.overlays.default ];
-      };
+      mkPkgs =
+        system:
+        import nixpkgs {
+          inherit system;
+          overlays = [ moonbit-overlay.overlays.default ];
+        };
     in
     {
       devShells = forEachSystem (
@@ -37,6 +39,8 @@
             packages = [ pkgs.moonbit-bin.moonbit.latest ];
 
             shellHook = ''
+              # Enable Git Hook
+              vp config
               ${pkgs.lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
                 export NIX_LDFLAGS="$NIX_LDFLAGS -no_compact_unwind"
               ''}
