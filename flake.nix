@@ -34,7 +34,7 @@
         let
           pkgs = mkPkgs system;
         in
-        {
+        rec {
           default = pkgs.mkShell {
             packages = [ pkgs.moonbit-bin.moonbit.latest ];
 
@@ -46,6 +46,11 @@
               ''}
             '';
           };
+          ci = default.overrideAttrs (_: {
+            shellHook = pkgs.lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
+              export NIX_LDFLAGS="$NIX_LDFLAGS -no_compact_unwind"
+            '';
+          });
         }
       );
     };
