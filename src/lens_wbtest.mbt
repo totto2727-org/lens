@@ -26,20 +26,23 @@ let lens_test_user_profile_metadata : Lens[Json] = object("user")
 let lens_test_user_name : Lens[String] = object("user").string("name")
 
 ///|
+#derive(Debug, FromJson, ToJson)
 struct FromJsonRepository {
   owner : String
-} derive(Debug, FromJson, ToJson)
+}
 
 ///|
+#derive(Debug, FromJson)
 struct FromJsonOnlyRepository {
   owner : String
-} derive(Debug, FromJson)
+}
 
 ///|
+#derive(Debug)
 enum FromJsonKind {
   Stable
   Preview
-} derive(Debug)
+}
 
 ///|
 impl FromJson for FromJsonKind with fn from_json(json, path) {
@@ -54,13 +57,14 @@ impl FromJson for FromJsonKind with fn from_json(json, path) {
 ///|
 impl ToJson for FromJsonKind with fn to_json(self) {
   match self {
-    Stable => "stable".to_json()
-    Preview => "preview".to_json()
+    Stable => ToJson::to_json("stable")
+    Preview => ToJson::to_json("preview")
   }
 }
 
 ///|
-struct FromJsonAbsolutePath(String) derive(Debug)
+#derive(Debug)
+struct FromJsonAbsolutePath(String)
 
 ///|
 impl FromJson for FromJsonAbsolutePath with fn from_json(json, path) {
@@ -76,7 +80,7 @@ impl FromJson for FromJsonAbsolutePath with fn from_json(json, path) {
 ///|
 impl ToJson for FromJsonAbsolutePath with fn to_json(self) {
   let FromJsonAbsolutePath(value) = self
-  value.to_json()
+  ToJson::to_json(value)
 }
 
 ///|
@@ -98,22 +102,22 @@ let lens_test_flag : Lens[Bool] = root().bool("flag")
 let lens_test_number : Lens[Double] = root().number("number")
 
 ///|
-let lens_test_integer : Lens[Int] = root().int("integer")
+let lens_test_integer : Lens[Int32] = root().int("integer")
 
 ///|
 let lens_test_ratio : Lens[Double] = root().number("ratio")
 
 ///|
-let lens_test_maximum : Lens[Int] = root().int("maximum")
+let lens_test_maximum : Lens[Int32] = root().int("maximum")
 
 ///|
-let lens_test_minimum : Lens[Int] = root().int("minimum")
+let lens_test_minimum : Lens[Int32] = root().int("minimum")
 
 ///|
-let lens_test_positive_int : Lens[Int] = root().int("positive")
+let lens_test_positive_int : Lens[Int32] = root().int("positive")
 
 ///|
-let lens_test_negative_int : Lens[Int] = root().int("negative")
+let lens_test_negative_int : Lens[Int32] = root().int("negative")
 
 ///|
 let lens_test_positive_number : Lens[Double] = root().number("positive")

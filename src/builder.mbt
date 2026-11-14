@@ -1,21 +1,24 @@
 ///|
 /// A machine-readable reason why a typed value could not be written to a JSON builder.
+#derive(Eq, Debug)
 pub enum JsonBuildIssueCode {
   PathConflict
-} derive(Eq, Debug)
+}
 
 ///|
 /// A structured JSON construction failure at an exact output pointer.
+#derive(Eq, Debug)
 pub struct JsonBuildIssue {
   pointer : Pointer
   code : JsonBuildIssueCode
-} derive(Eq, Debug)
+}
 
 ///|
 /// The typed error raised when a lens cannot write a value to a JSON builder.
+#derive(Eq, Debug)
 pub suberror JsonBuildError {
   JsonBuildError(JsonBuildIssue)
-} derive(Eq, Debug)
+}
 
 ///|
 priv enum BuildNode {
@@ -34,25 +37,25 @@ pub struct JsonBuilder {
 ///
 /// ```mbt check
 /// test {
-///   let builder = JsonBuilder::JsonBuilder()
-///   object("user").string("name").set(builder, "Ada")
+///   let builder = @lens.JsonBuilder::JsonBuilder()
+///   @lens.object("user").string("name").set(builder, "Ada")
 ///   @json.json_inspect(builder, content={ "user": { "name": "Ada" } })
 /// }
 /// ```
 pub fn JsonBuilder::JsonBuilder() -> JsonBuilder {
-  JsonBuilder::{ properties: Map([]) }
+  JsonBuilder::{ properties: Map([]), }
 }
 
 ///|
 fn build_error(pointer : Pointer, code : JsonBuildIssueCode) -> JsonBuildError {
-  JsonBuildError(JsonBuildIssue::{ pointer, code })
+  JsonBuildError(JsonBuildIssue::{ pointer, code, })
 }
 
 ///|
 fn set_build_value(
   properties : Map[String, BuildNode],
   pointer : Pointer,
-  segment_index : Int,
+  segment_index : Int32,
   value : Json,
 ) -> Unit raise JsonBuildError {
   match pointer.segments[segment_index] {
@@ -88,7 +91,7 @@ fn set_build_value(
 fn remove_build_value(
   properties : Map[String, BuildNode],
   pointer : Pointer,
-  segment_index : Int,
+  segment_index : Int32,
 ) -> Unit {
   match pointer.segments[segment_index] {
     Key(key) => {
@@ -114,7 +117,7 @@ fn remove_build_value(
 impl ToJson for BuildNode with fn to_json(self) -> Json {
   match self {
     BuildValue(value) => value
-    BuildObject(properties) => properties.to_json()
+    BuildObject(properties) => ToJson::to_json(properties)
   }
 }
 
@@ -198,5 +201,5 @@ pub fn[T] PresenceLens::set_or_abort(
 
 ///|
 pub impl ToJson for JsonBuilder with fn to_json(self) -> Json {
-  self.properties.to_json()
+  ToJson::to_json(self.properties)
 }

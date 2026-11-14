@@ -38,10 +38,11 @@ priv enum PresenceMode {
 
 ///|
 /// Controls how a `nullish` lens encodes `None`.
+#derive(Eq, Debug)
 pub(all) enum NullishEncodeMode {
   Omit
   Null
-} derive(Eq, Debug)
+}
 
 ///|
 /// Returns an object lens positioned at the document root.
@@ -49,7 +50,7 @@ pub(all) enum NullishEncodeMode {
 /// ```mbt check
 /// test {
 ///   let document = @json.parse("{\"user\":{\"name\":\"Ada\"}}")
-///   inspect(object("user").string("name").get(document), content="Ada")
+///   inspect(@lens.object("user").string("name").get(document), content="Ada")
 /// }
 /// ```
 pub fn root() -> ObjectLens {
@@ -118,7 +119,7 @@ pub fn ObjectLens::number(self : ObjectLens, key : String) -> Lens[Double] {
 ///
 /// Fractional, saturating, and special-value behavior therefore follows the
 /// standard MoonBit `Double::to_int` conversion.
-pub fn ObjectLens::int(self : ObjectLens, key : String) -> Lens[Int] {
+pub fn ObjectLens::int(self : ObjectLens, key : String) -> Lens[Int32] {
   Lens::{
     pointer: self.lens.pointer.key(key),
     decoder: int_decoder(),
@@ -170,13 +171,13 @@ pub fn[T] Lens::array(self : Lens[T]) -> Lens[Array[T]] {
 ///|
 /// Returns `None` for JSON `null` while preserving missing-property errors.
 pub fn[T] Lens::nullable(self : Lens[T]) -> PresenceLens[T] {
-  PresenceLens::{ lens: self, mode: Nullable }
+  PresenceLens::{ lens: self, mode: Nullable, }
 }
 
 ///|
 /// Returns `None` for a missing selected path while rejecting JSON `null`.
 pub fn[T] Lens::optional(self : Lens[T]) -> PresenceLens[T] {
-  PresenceLens::{ lens: self, mode: Optional }
+  PresenceLens::{ lens: self, mode: Optional, }
 }
 
 ///|
@@ -187,19 +188,19 @@ pub fn[T] Lens::nullish(
   self : Lens[T],
   encode_mode? : NullishEncodeMode,
 ) -> PresenceLens[T] {
-  PresenceLens::{ lens: self, mode: Nullish(encode_mode.unwrap_or(Omit)) }
+  PresenceLens::{ lens: self, mode: Nullish(encode_mode.unwrap_or(Omit)), }
 }
 
 ///|
 /// Replaces the current presence policy with nullable semantics.
 pub fn[T] PresenceLens::nullable(self : PresenceLens[T]) -> PresenceLens[T] {
-  PresenceLens::{ lens: self.lens, mode: Nullable }
+  PresenceLens::{ lens: self.lens, mode: Nullable, }
 }
 
 ///|
 /// Replaces the current presence policy with optional semantics.
 pub fn[T] PresenceLens::optional(self : PresenceLens[T]) -> PresenceLens[T] {
-  PresenceLens::{ lens: self.lens, mode: Optional }
+  PresenceLens::{ lens: self.lens, mode: Optional, }
 }
 
 ///|
@@ -208,7 +209,7 @@ pub fn[T] PresenceLens::nullish(
   self : PresenceLens[T],
   encode_mode? : NullishEncodeMode,
 ) -> PresenceLens[T] {
-  PresenceLens::{ lens: self.lens, mode: Nullish(encode_mode.unwrap_or(Omit)) }
+  PresenceLens::{ lens: self.lens, mode: Nullish(encode_mode.unwrap_or(Omit)), }
 }
 
 ///|
@@ -283,7 +284,7 @@ pub fn[T] Lens::get(self : Lens[T], document : Json) -> T raise LensError {
 
 ///|
 fn missing_property(pointer : Pointer) -> LensError {
-  LensError(Issue::{ pointer, code: MissingProperty, message: None })
+  LensError(Issue::{ pointer, code: MissingProperty, message: None, })
 }
 
 ///|

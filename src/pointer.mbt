@@ -1,47 +1,49 @@
 ///|
+#derive(Eq, Debug)
 priv enum PointerSegment {
   Key(String)
-  Index(Int)
-} derive(Eq, Debug)
+  Index(Int32)
+}
 
 ///|
 /// An immutable JSON Pointer identifying a location in a JSON document.
+#derive(Eq, Debug)
 pub struct Pointer {
   priv segments : Array[PointerSegment]
-} derive(Eq, Debug)
+}
 
 ///|
 fn Pointer::root() -> Pointer {
-  Pointer::{ segments: [] }
+  Pointer::{ segments: [], }
 }
 
 ///|
 fn Pointer::key(self : Pointer, key : String) -> Pointer {
-  Pointer::{ segments: [..self.segments, Key(key)] }
+  Pointer::{ segments: [..self.segments, Key(key)], }
 }
 
 ///|
-fn Pointer::index(self : Pointer, index : Int) -> Pointer {
-  Pointer::{ segments: [..self.segments, Index(index)] }
+fn Pointer::index(self : Pointer, index : Int32) -> Pointer {
+  Pointer::{ segments: [..self.segments, Index(index)], }
 }
 
 ///|
 fn Pointer::append(self : Pointer, suffix : Pointer) -> Pointer {
-  Pointer::{ segments: [..self.segments, ..suffix.segments] }
+  Pointer::{ segments: [..self.segments, ..suffix.segments], }
 }
 
 ///|
-fn Pointer::prefix(self : Pointer, length : Int) -> Pointer {
-  Pointer::{ segments: self.segments[:length].to_owned() }
+fn Pointer::prefix(self : Pointer, length : Int32) -> Pointer {
+  Pointer::{ segments: self.segments[:length].to_owned(), }
 }
 
 ///|
-fn Pointer::length(self : Pointer) -> Int {
+fn Pointer::length(self : Pointer) -> Int32 {
   self.segments.length()
 }
 
 ///|
-fn Pointer::prepend_index(self : Pointer, index : Int) -> Pointer {
+fn Pointer::prepend_index(self : Pointer, index : Int32) -> Pointer {
   Pointer::root().index(index).append(self)
 }
 

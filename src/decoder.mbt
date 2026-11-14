@@ -65,9 +65,9 @@ fn number_decoder() -> Decoder[Double] {
 }
 
 ///|
-fn int_decoder() -> Decoder[Int] {
+fn int_decoder() -> Decoder[Int32] {
   Decoder::{
-    decode_: fn(value, _path) -> Int raise DecodeProblem {
+    decode_: fn(value, _path) -> Int32 raise DecodeProblem {
       match value {
         Json::Number(number, ..) => number.to_int()
         _ => raise type_mismatch(JsonKind::Number, value)
@@ -78,7 +78,7 @@ fn int_decoder() -> Decoder[Int] {
 
 ///|
 fn json_decoder() -> Decoder[Json] {
-  Decoder::{ decode_: fn(value, _path) { value } }
+  Decoder::{ decode_: fn(value, _path) { value }, }
 }
 
 ///|
@@ -151,7 +151,7 @@ fn DecodeProblem::json_decode_error(
 ) -> @json.JsonDecodeError {
   match self {
     Structured(pointer~, code~, message~) => {
-      let issue = Issue::{ pointer, code, message }
+      let issue = Issue::{ pointer, code, message, }
       pointer.json_decode_error(path, repr(LensError(issue)))
     }
     External(error~, pointer=_) => error
