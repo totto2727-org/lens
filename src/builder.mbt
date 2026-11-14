@@ -114,7 +114,7 @@ fn remove_build_value(
 impl ToJson for BuildNode with fn to_json(self) -> Json {
   match self {
     BuildValue(value) => value
-    BuildObject(properties) => ToJson::to_json(properties)
+    BuildObject(properties) => properties.to_json()
   }
 }
 
@@ -198,5 +198,5 @@ pub fn[T] PresenceLens::set_or_abort(
 
 ///|
 pub impl ToJson for JsonBuilder with fn to_json(self) -> Json {
-  ToJson::to_json(self.properties)
+  self.properties.to_json()
 }

@@ -353,24 +353,24 @@ fn validate_complex_with_lenses(
 ///|
 fn encode_complex_with_standard_api(value : ComplexResult) -> Json {
   Json::object({
-    "requestId": ToJson::to_json(value.request_id),
-    "version": ToJson::to_json(value.version),
+    "requestId": value.request_id.to_json(),
+    "version": value.version.to_json(),
     "user": Json::object({
-      "name": ToJson::to_json(value.user_name),
-      "active": ToJson::to_json(value.user_active),
-      "age": ToJson::to_json(value.user_age),
-      "score": ToJson::to_json(value.user_score),
-      "metadata": Json::object({ "tags": ToJson::to_json(value.tags) }),
+      "name": value.user_name.to_json(),
+      "active": value.user_active.to_json(),
+      "age": value.user_age.to_json(),
+      "score": value.user_score.to_json(),
+      "metadata": Json::object({ "tags": value.tags.to_json() }),
     }),
     "project": Json::object({
-      "id": ToJson::to_json(value.project_id),
-      "archived": ToJson::to_json(value.project_archived),
+      "id": value.project_id.to_json(),
+      "archived": value.project_archived.to_json(),
     }),
     "metrics": Json::object({
-      "latencyMs": ToJson::to_json(value.latency_ms),
-      "attempts": ToJson::to_json(value.attempts),
+      "latencyMs": value.latency_ms.to_json(),
+      "attempts": value.attempts.to_json(),
     }),
-    "payload": Json::object({ "title": ToJson::to_json(value.payload_title) }),
+    "payload": Json::object({ "title": value.payload_title.to_json() }),
   })
 }
 
