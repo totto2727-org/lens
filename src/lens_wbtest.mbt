@@ -54,8 +54,8 @@ impl FromJson for FromJsonKind with fn from_json(json, path) {
 ///|
 impl ToJson for FromJsonKind with fn to_json(self) {
   match self {
-    Stable => "stable".to_json()
-    Preview => "preview".to_json()
+    Stable => ToJson::to_json("stable")
+    Preview => ToJson::to_json("preview")
   }
 }
 
@@ -76,7 +76,7 @@ impl FromJson for FromJsonAbsolutePath with fn from_json(json, path) {
 ///|
 impl ToJson for FromJsonAbsolutePath with fn to_json(self) {
   let FromJsonAbsolutePath(value) = self
-  value.to_json()
+  ToJson::to_json(value)
 }
 
 ///|
