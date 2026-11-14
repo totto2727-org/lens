@@ -3,10 +3,11 @@
 ///
 /// `Valid` carries no decoded value. Use the original typed lenses to read the
 /// document after validation succeeds.
+#derive(Eq, Debug)
 pub enum Validation {
   Valid
   Invalid(ReadOnlyArray[Issue])
-} derive(Eq, Debug)
+}
 
 ///|
 /// Runs every lens check and returns all issues in input order.
@@ -18,8 +19,8 @@ pub enum Validation {
 /// ```mbt check
 /// test {
 ///   let document = @json.parse("{\"user\":{\"name\":\"Ada\"}}")
-///   let name_lens = object("user").string("name")
-///   match validate(document, [name_lens]) {
+///   let name_lens = @lens.object("user").string("name")
+///   match @lens.validate(document, [name_lens]) {
 ///     Valid => ()
 ///     Invalid(_) => fail("expected valid document")
 ///   }
