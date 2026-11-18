@@ -8,6 +8,9 @@ pub trait LensTrait {
 }
 
 ///|
+pub extend Lens with LensTrait::{check}
+
+///|
 /// Erases this lens's successful value while preserving its typed failure.
 ///
 /// `validate` can therefore accept heterogeneous `Lens[T]` values through
@@ -17,10 +20,16 @@ pub impl[T] LensTrait for Lens[T] with fn check(self, document) {
 }
 
 ///|
+pub extend PresenceLens with LensTrait::{check}
+
+///|
 /// Erases this presence-aware lens's successful value while preserving its typed failure.
 pub impl[T] LensTrait for PresenceLens[T] with fn check(self, document) {
   self.get(document) |> ignore
 }
+
+///|
+pub extend ObjectLens with LensTrait::{check}
 
 ///|
 /// Erases this object lens's successful value while preserving its failure.

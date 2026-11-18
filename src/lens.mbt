@@ -45,6 +45,12 @@ pub(all) enum NullishEncodeMode {
 }
 
 ///|
+pub extend NullishEncodeMode with Eq::{not_equal, equal}
+
+///|
+pub extend NullishEncodeMode with Debug::{to_repr}
+
+///|
 /// Returns an object lens positioned at the document root.
 ///
 /// ```mbt check

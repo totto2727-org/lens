@@ -51,6 +51,7 @@ flake.nix      Reproducible MoonBit development shell
 
 ## Package-specific rules
 
+- Place trait extensions with their type or trait implementation. Do not collect unrelated declarations in `extensions.mbt`.
 - Add or update `///` documentation when changing a public symbol; Mooncakes uses these comments for the generated API reference.
 - Keep README examples concise, and keep detailed operational commands in this file.
 - Preserve the package's typed JSON boundary: use `custom` for application types with standard JSON traits and `json` only when a raw JSON value is intentional.
