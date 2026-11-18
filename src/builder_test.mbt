@@ -4,7 +4,7 @@ let builder_test_user_name : @lens.Lens[String] = @lens.object("user").string(
 )
 
 ///|
-let builder_test_user_age : @lens.Lens[Int] = @lens.object("user").int("age")
+let builder_test_user_age : @lens.Lens[Int32] = @lens.object("user").int("age")
 
 ///|
 let builder_test_user_active : @lens.Lens[Bool] = @lens.object("user").bool(

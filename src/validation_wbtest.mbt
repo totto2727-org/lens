@@ -6,7 +6,7 @@ let validation_user_lens : ObjectLens = object("user")
 let validation_name_lens : Lens[String] = object("user").string("name")
 
 ///|
-let validation_age_lens : Lens[Int] = object("user").int("age")
+let validation_age_lens : Lens[Int32] = object("user").int("age")
 
 ///|
 let validation_active_lens : Lens[Bool] = object("user").bool("active")

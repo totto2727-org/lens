@@ -76,34 +76,35 @@ fn simple_document() -> Json raise {
 }
 
 ///|
+#derive(Eq)
 struct ComplexResult {
   request_id : String
-  version : Int
+  version : Int32
   user_name : String
   user_active : Bool
-  user_age : Int
+  user_age : Int32
   user_score : Double
   tags : Array[String]
   project_id : String
   project_archived : Bool
   latency_ms : Double
-  attempts : Int
+  attempts : Int32
   payload_title : String
-} derive(Eq)
+}
 
 ///|
 struct ComplexLenses {
   request_id : @lens.Lens[String]
-  version : @lens.Lens[Int]
+  version : @lens.Lens[Int32]
   user_name : @lens.Lens[String]
   user_active : @lens.Lens[Bool]
-  user_age : @lens.Lens[Int]
+  user_age : @lens.Lens[Int32]
   user_score : @lens.Lens[Double]
   tags : @lens.Lens[Array[String]]
   project_id : @lens.Lens[String]
   project_archived : @lens.Lens[Bool]
   latency_ms : @lens.Lens[Double]
-  attempts : @lens.Lens[Int]
+  attempts : @lens.Lens[Int32]
   payload_title : @lens.Lens[String]
 }
 
@@ -123,9 +124,9 @@ struct UnusedLenses {
   user_plan : @lens.Lens[String]
   project_name : @lens.Lens[String]
   project_visibility : @lens.Lens[String]
-  project_member_count : @lens.Lens[Int]
+  project_member_count : @lens.Lens[Int32]
   metrics_cached : @lens.Lens[Bool]
-  metrics_bytes : @lens.Lens[Int]
+  metrics_bytes : @lens.Lens[Int32]
   payload_kind : @lens.Lens[String]
   payload_items : @lens.Lens[Json]
   payload_checksum : @lens.Lens[String]
@@ -147,7 +148,7 @@ let simple_bool_lens : @lens.Lens[Bool] = @lens.root().bool("bool")
 let simple_number_lens : @lens.Lens[Double] = @lens.root().number("number")
 
 ///|
-let simple_int_lens : @lens.Lens[Int] = @lens.root().int("int")
+let simple_int_lens : @lens.Lens[Int32] = @lens.root().int("int")
 
 ///|
 let simple_json_lens : @lens.Lens[Json] = @lens.root().json("json")
@@ -353,24 +354,24 @@ fn validate_complex_with_lenses(
 ///|
 fn encode_complex_with_standard_api(value : ComplexResult) -> Json {
   Json::object({
-    "requestId": value.request_id.to_json(),
-    "version": value.version.to_json(),
+    "requestId": ToJson::to_json(value.request_id),
+    "version": ToJson::to_json(value.version),
     "user": Json::object({
-      "name": value.user_name.to_json(),
-      "active": value.user_active.to_json(),
-      "age": value.user_age.to_json(),
-      "score": value.user_score.to_json(),
-      "metadata": Json::object({ "tags": value.tags.to_json() }),
+      "name": ToJson::to_json(value.user_name),
+      "active": ToJson::to_json(value.user_active),
+      "age": ToJson::to_json(value.user_age),
+      "score": ToJson::to_json(value.user_score),
+      "metadata": Json::object({ "tags": ToJson::to_json(value.tags) }),
     }),
     "project": Json::object({
-      "id": value.project_id.to_json(),
-      "archived": value.project_archived.to_json(),
+      "id": ToJson::to_json(value.project_id),
+      "archived": ToJson::to_json(value.project_archived),
     }),
     "metrics": Json::object({
-      "latencyMs": value.latency_ms.to_json(),
-      "attempts": value.attempts.to_json(),
+      "latencyMs": ToJson::to_json(value.latency_ms),
+      "attempts": ToJson::to_json(value.attempts),
     }),
-    "payload": Json::object({ "title": value.payload_title.to_json() }),
+    "payload": Json::object({ "title": ToJson::to_json(value.payload_title) }),
   })
 }
 

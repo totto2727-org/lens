@@ -10,37 +10,37 @@ fn[T] Encoder::encode(self : Encoder[T], value : T) -> Json {
 
 ///|
 fn string_encoder() -> Encoder[String] {
-  Encoder::{ encode_: value => Json::string(value) }
+  Encoder::{ encode_: value => Json::string(value), }
 }
 
 ///|
 fn bool_encoder() -> Encoder[Bool] {
-  Encoder::{ encode_: value => Json::boolean(value) }
+  Encoder::{ encode_: value => Json::boolean(value), }
 }
 
 ///|
 fn number_encoder() -> Encoder[Double] {
-  Encoder::{ encode_: value => Json::number(value) }
+  Encoder::{ encode_: value => Json::number(value), }
 }
 
 ///|
-fn int_encoder() -> Encoder[Int] {
-  Encoder::{ encode_: value => Json::number(value.to_double()) }
+fn int_encoder() -> Encoder[Int32] {
+  Encoder::{ encode_: value => Json::number(value.to_double()), }
 }
 
 ///|
 fn json_encoder() -> Encoder[Json] {
-  Encoder::{ encode_: value => value }
+  Encoder::{ encode_: value => value, }
 }
 
 ///|
 fn[T : ToJson] custom_encoder() -> Encoder[T] {
-  Encoder::{ encode_: value => ToJson::to_json(value) }
+  Encoder::{ encode_: value => ToJson::to_json(value), }
 }
 
 ///|
 fn object_encoder() -> Encoder[Map[String, Json]] {
-  Encoder::{ encode_: value => Json::object(value.copy()) }
+  Encoder::{ encode_: value => Json::object(value.copy()), }
 }
 
 ///|
