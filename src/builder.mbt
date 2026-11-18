@@ -6,6 +6,12 @@ pub enum JsonBuildIssueCode {
 }
 
 ///|
+pub extend JsonBuildIssueCode with Eq::{not_equal, equal}
+
+///|
+pub extend JsonBuildIssueCode with Debug::{to_repr}
+
+///|
 /// A structured JSON construction failure at an exact output pointer.
 #derive(Eq, Debug)
 pub struct JsonBuildIssue {
@@ -14,11 +20,23 @@ pub struct JsonBuildIssue {
 }
 
 ///|
+pub extend JsonBuildIssue with Eq::{not_equal, equal}
+
+///|
+pub extend JsonBuildIssue with Debug::{to_repr}
+
+///|
 /// The typed error raised when a lens cannot write a value to a JSON builder.
 #derive(Eq, Debug)
 pub suberror JsonBuildError {
   JsonBuildError(JsonBuildIssue)
 }
+
+///|
+pub extend JsonBuildError with Eq::{not_equal, equal}
+
+///|
+pub extend JsonBuildError with Debug::{to_repr}
 
 ///|
 priv enum BuildNode {
@@ -203,3 +221,6 @@ pub fn[T] PresenceLens::set_or_abort(
 pub impl ToJson for JsonBuilder with fn to_json(self) -> Json {
   ToJson::to_json(self.properties)
 }
+
+///|
+pub extend JsonBuilder with ToJson::{to_json}

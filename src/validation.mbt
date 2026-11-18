@@ -10,6 +10,12 @@ pub enum Validation {
 }
 
 ///|
+pub extend Validation with Eq::{not_equal, equal}
+
+///|
+pub extend Validation with Debug::{to_repr}
+
+///|
 /// Runs every lens check and returns all issues in input order.
 ///
 /// This function never constructs or returns application values. An empty

@@ -32,10 +32,25 @@ struct FromJsonRepository {
 }
 
 ///|
+pub extend FromJsonRepository with Debug::{to_repr}
+
+///|
+pub extend FromJsonRepository with FromJson::{from_json}
+
+///|
+pub extend FromJsonRepository with ToJson::{to_json}
+
+///|
 #derive(Debug, FromJson)
 struct FromJsonOnlyRepository {
   owner : String
 }
+
+///|
+pub extend FromJsonOnlyRepository with Debug::{to_repr}
+
+///|
+pub extend FromJsonOnlyRepository with FromJson::{from_json}
 
 ///|
 #derive(Debug)
@@ -43,6 +58,9 @@ enum FromJsonKind {
   Stable
   Preview
 }
+
+///|
+pub extend FromJsonKind with Debug::{to_repr}
 
 ///|
 impl FromJson for FromJsonKind with fn from_json(json, path) {
@@ -65,6 +83,9 @@ impl ToJson for FromJsonKind with fn to_json(self) {
 ///|
 #derive(Debug)
 struct FromJsonAbsolutePath(String)
+
+///|
+pub extend FromJsonAbsolutePath with Debug::{to_repr}
 
 ///|
 impl FromJson for FromJsonAbsolutePath with fn from_json(json, path) {

@@ -13,6 +13,12 @@ pub struct Pointer {
 }
 
 ///|
+pub extend Pointer with Eq::{not_equal, equal}
+
+///|
+pub extend Pointer with Debug::{to_repr}
+
+///|
 fn Pointer::root() -> Pointer {
   Pointer::{ segments: [], }
 }
